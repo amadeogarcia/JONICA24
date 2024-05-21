@@ -10,12 +10,18 @@ pip install pyserial
 """
 
 # Defino las macros para forma y color
-CUBO = 0x10
-ESFERA = 0x20
-VERDE = 0x01
-ROJO = 0x02
-COLOR_MASK = 0x0F
-SHAPE_MASK = 0xF0
+CUBO = 0x30         # '0'
+ESFERA = 0x31       # '1'
+VERDE = 0x01        #  1
+ROJO = 0x03         #  3
+
+"""
+Segun los valores ASCII elegidos, las combinaciones quedan como sigue:
+* CUBO VERDE = '1'
+* ESF. VERDE = '2'
+* CUBO ROJO  = '3'
+* ESF. ROJA  = '4'
+"""
 
 # Importo las bibliotecas necesarias
 import serial
@@ -29,22 +35,25 @@ seri.flushInput()
 # Funcion para detectar el objeto
 def codigoObjeto(approxPoly, color):
     # Inicializo el byte a transmitir
-    objeto = 0x00
+    objeto = 0
 
     if len(approxPoly) <= 9 :
-        objeto |= CUBO
+        objeto += CUBO
     if len(approxPoly) >= 11:
-        objeto |= ESFERA
+        objeto += ESFERA
     
     if color == (0,255,0):
-        objeto |= VERDE
+        objeto += VERDE
     if color == (0,0,255):
-        objeto |= ROJO
+        objeto += ROJO
 
-    # Verifico que no haya un 0 en ningun digito, ya que eso significaria
-    # que algo se detecto mal
-    if (objeto & COLOR_MASK == 0) or (objeto & SHAPE_MASK == 0):
-        objeto = 0
+    # Verifico que el objeto se haya detectado correctamente
+    """
+    Es horrible no poder intercambiar entre chars y bytes indistintamente
+    pero Python no me deja. Basicamente necesito que objeto este entre
+    '1' y '4' pero sin ser de tipo char.
+    """
+    if 0x31 <= objeto <= 0x34:  objeto = 0
     
     return objeto
 
@@ -75,11 +84,12 @@ def dibujar(mask, color):
 
             # A partir de aca es codigo de compatibilidad para dibujar y escribir en el stream de video
             # TODO: Borrar en la final release
-            if objeto:
-                if (objeto & COLOR_MASK) == ROJO:   color_name = "ROJO"
-                if (objeto & COLOR_MASK) == VERDE:  color_name = "VERDE"
-                if (objeto & SHAPE_MASK) == CUBO:   shape_name = "CUBO"
-                if (objeto & SHAPE_MASK) == ESFERA: shape_name = "ESFERA"
+            obj = objeto - 0x30
+            if obj:
+                if obj > 2:   color_name = "ROJO"
+                else:         color_name = "VERDE"
+                if obj % 2:   shape_name = "ESFERA"
+                else:         shape_name = "ESFERA"
                 cv2.drawContours(frame, [nuevoContorno], 0, color, 3)
                 cv2.putText(frame, color_name, (x+10,y), font, 0.75, color, 1, cv2.LINE_AA)
                 cv2.putText(frame, shape_name, (x+10,y-20), font, 0.75, color, 1, cv2.LINE_AA)
