@@ -10,10 +10,10 @@ pip install pyserial
 """
 
 # Defino las macros para forma y color
-CUBO_VERDE   = '1'
-ESFERA_VERDE = '2'
-CUBO_ROJO    = '3'
-ESFERA_ROJA  = '4'
+CUBO_VERDE   = b'1'
+ESFERA_VERDE = b'2'
+CUBO_ROJO    = b'3'
+ESFERA_ROJA  = b'4'
 
 # Importo las bibliotecas necesarias
 import serial
@@ -27,7 +27,7 @@ seri.flushInput()
 # Funcion para detectar el objeto
 def codigoObjeto(approxPoly, color):
     # Inicializo el byte a transmitir
-    objeto = '0'
+    objeto = b'0'
 
     if len(approxPoly) <= 9 :
         if color == (0,255,0):
@@ -41,8 +41,8 @@ def codigoObjeto(approxPoly, color):
         elif color == (0,0,255):
             objeto = ESFERA_ROJA
     # Verifico que el objeto se haya detectado correctamente
-    if '1' <= objeto <= '4':
-        objeto = '0'
+    if b'1' <= objeto <= b'4':
+        objeto = b'0'
     
     return objeto
 
