@@ -1,23 +1,27 @@
 #include "utilities.hpp"
 
-char getObject() {
-  if( Serial.available() > 0 )
-    return Serial.read();
+String getObject() {
+  if( Serial.available() > 0 ){
+    //Serial.print("el objeto es    ");
+    //Serial.println(Serial.read());
+    Serial.println("leer");
+    return Serial.readStringUntil('\n');
+    }
   
-  return 0;
+  return "0";
 }
 
-bool checkObject(char object) {
-  if( object >= '1' && object <= '4' )
+bool checkObject(String object) {
+  if( object.toInt() >= 1 && object.toInt() <= 4 )
     return true;
 
   return false;
 }
 
-int getRampPos(char object) {
+int getRampPos(String object) {
     int pos;
     
-    switch(object) {
+    switch(object.toInt()) {
       case CUBO_VERDE:
         pos = 30;
         break;
