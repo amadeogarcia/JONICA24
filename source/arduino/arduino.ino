@@ -4,20 +4,25 @@
 #define DETECTAR_OBJETO 0
 #define MOVER_RAMPA 1
 #define MOVER_RULETA 2
-#define MIN_DELAY 100     // En milisegundos
+#define DELAY 250                           // En milisegundos
 
 // Declaracion de variables
 Servo rampa, ruleta;
 int estado_actual = DETECTAR_OBJETO,
     proximo_estado = -1;
-int objeto = 0;                         // Codigo del objeto detectado
-unsigned long t = 0;                    // Variable para delays
-int pos_rampa = 30, pos_ruleta = 30;      // Variables de posicionamiento
+bool ruleta_movida = false;                 // Bandera para saber si ya movi la ruleta
+
+char objeto = 0;                            // Codigo del objeto detectado
+unsigned long t = 0;                        // Variable para delays
+int pos_rampa = 30, pos_ruleta = 30;        // Variables de posicionamiento
+
+
+unsigned long t_debug = 0;
 
 void setup() {
-  
   // Abro el puerto serie
   Serial.begin(9600);
+  Serial.println("Inicializando...");
   
   // Configuro el servo de la rampa al pin 9
   // Muevo la rampa a su posicion inicial de 30 grados
@@ -28,43 +33,65 @@ void setup() {
   // Muevo la rampa a su posicion inicial
   ruleta.attach(10);
   ruleta.write(pos_ruleta);
-    
+
+  t_debug = millis();
 }
 
 
 void loop() {
-  
+
+  if( millis() - t_debug > DELAY ) {
+    Serial.print(objeto);
+    Serial.print("      rampa  ");
+    Serial.print(pos_rampa);
+    Serial.print("      ruleta  ");
+    Serial.println(pos_ruleta);
+    t_debug = millis();
+  }
+
   switch(estado_actual) {
     case DETECTAR_OBJETO:
-      if( millis() - t > 5*MIN_DELAY ) {
+      if( millis() - t > DELAY ) {
         objeto = getObject();
-        if( objeto ) {
+
+        if( checkObject(objeto) ) {
           t = millis();
           proximo_estado = MOVER_RAMPA;
+          Serial.println("Moviendo rampa...");
         }
       }
       break;
     
     case MOVER_RAMPA:
-      if( millis() - t > 2*MIN_DELAY ) {
-        if( rampa.read() != pos_rampa )
-          pos_rampa = moveRamp(objeto, rampa);
-        else {
+      pos_rampa = getRampPos(objeto);
+      rampa.write(pos_rampa);
+      
+      if( millis() - t > 2*DELAY ) {
+        if( rampa.read() == pos_rampa || (pos_rampa == pos_rampa) ) {
           t = millis();
           proximo_estado = MOVER_RULETA;
+          Serial.println("Moviendo ruleta...");
         }
       }
+      
       break;
 
     case MOVER_RULETA:
-      if( millis() - t > 5*MIN_DELAY ) {
-        if( rampa.read() != pos_ruleta )
-          pos_ruleta = moveWheel(pos_ruleta, ruleta);
-        else {
+      if( !ruleta_movida ) {
+        pos_ruleta = getWheelPos(pos_ruleta);
+        ruleta_movida = true;
+      }
+      ruleta.write(pos_ruleta);
+      
+      if( millis() - t > 2*DELAY ) {
+        if( rampa.read() == pos_ruleta || (pos_ruleta == pos_ruleta) ) {
           t = millis();
+          ruleta_movida = false;
           proximo_estado = DETECTAR_OBJETO;
+          Serial.println("Detectando objeto...");
         }
       }
+      
       break;      
 
     default:

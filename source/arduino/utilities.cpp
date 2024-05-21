@@ -1,11 +1,20 @@
 #include "utilities.hpp"
 
-int getObject() {
+char getObject() {
   if( Serial.available() > 0 )
     return Serial.read();
+  
+  return 0;
 }
 
-int moveRamp(int object, Servo &rampa) {
+bool checkObject(char object) {
+  if( object >= '1' && object <= '4' )
+    return true;
+
+  return false;
+}
+
+int getRampPos(char object) {
     int pos;
     
     switch(object) {
@@ -24,15 +33,12 @@ int moveRamp(int object, Servo &rampa) {
       default:
         pos = 0;
     }
-    
-    if( pos )
-      rampa.write(pos);
-    
+        
     return pos;
 }
 
 // TODO: cambiar implementacion segun la construccion de la ruleta
-int moveWheel(int pos_actual, Servo &ruleta) {
+int getWheelPos(int pos_actual) {
   int next_pos = 0;
   switch(pos_actual) {
     case 30:
@@ -43,6 +49,5 @@ int moveWheel(int pos_actual, Servo &ruleta) {
       break;
   }
 
-  ruleta.write(next_pos);
   return next_pos;
 }
