@@ -10,6 +10,7 @@ pip install pyserial
 """
 
 # Defino las macros para forma y color
+OBJ_INVALIDO = b'0'
 CUBO_VERDE   = b'1'
 ESFERA_VERDE = b'2'
 CUBO_ROJO    = b'3'
@@ -27,7 +28,7 @@ seri.flushInput()
 # Funcion para detectar el objeto
 def codigoObjeto(approxPoly, color):
     # Inicializo el byte a transmitir
-    objeto = b'0'
+    objeto = OBJ_INVALIDO
 
     if len(approxPoly) <= 9 :
         if color == (0,255,0):
@@ -41,8 +42,11 @@ def codigoObjeto(approxPoly, color):
         elif color == (0,0,255):
             objeto = ESFERA_ROJA
     # Verifico que el objeto se haya detectado correctamente
-    if b'1' <= objeto <= b'4':
-        objeto = b'0'
+    if not (objeto == CUBO_VERDE or
+            objeto == CUBO_ROJO  or
+            objeto == ESFERA_VERDE or
+            objeto == ESFERA_ROJA):
+        objeto = OBJ_INVALIDO
     
     return objeto
 
@@ -73,13 +77,13 @@ def dibujar(mask, color):
 
             # A partir de aca es codigo de compatibilidad para dibujar y escribir en el stream de video
             # TODO: Borrar en la final release
-            if objeto != '0':
-                if objeto == '1' or objeto == '3':
+            if objeto != OBJ_INVALIDO:
+                if objeto == CUBO_VERDE or objeto == CUBO_ROJO:
                     shape_name = "CUBO"
                 else:
                     shape_name = "ESFERA"
                 
-                if objeto == '1' or objeto == '2':
+                if objeto == CUBO_VERDE or objeto == ESFERA_VERDE:
                     color_name = "VERDE"
                 else:
                     color_name = "ROJO"
