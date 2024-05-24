@@ -1,12 +1,11 @@
 #include "utilities.hpp"
 
 String getObject() {
-  if( Serial.available() > 0 ){
-    //Serial.print("el objeto es    ");
-    //Serial.println(Serial.read());
-    Serial.println("leer");
-    return Serial.readStringUntil('\n');
-    }
+    if( Serial.available() > 0 ){
+      //Serial.print("el objeto es    ");
+      //Serial.println(Serial.read());
+      return Serial.readStringUntil('\n');
+      }
   
   return "0";
 }
@@ -45,11 +44,11 @@ int getRampPos(String object) {
 int getWheelPos(int pos_actual) {
   int next_pos = 0;
   switch(pos_actual) {
-    case 30:
-      next_pos = 90;
+    case 0:
+      next_pos = 155;
       break;
-    case 90:
-      next_pos = 30;
+    case 155:
+      next_pos = 0;
       break;
   }
 

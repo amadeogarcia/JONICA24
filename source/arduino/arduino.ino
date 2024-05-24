@@ -14,10 +14,10 @@ bool ruleta_movida = false;                 // Bandera para saber si ya movi la 
 
 String objeto="0";                            // Codigo del objeto detectado
 unsigned long t = 0;                        // Variable para delays
-int pos_rampa = 30, pos_ruleta = 30;        // Variables de posicionamiento
+int pos_rampa = 30, pos_ruleta = 0;        // Variables de posicionamiento
 
 
-unsigned long t_debug = 0;
+unsigned long t_debug = 0 , t_debug2 = 0 ;
 
 void setup() {
   // Abro el puerto serie
@@ -35,13 +35,14 @@ void setup() {
   ruleta.write(pos_ruleta);
 
   t_debug = millis();
+  t_debug2 = millis();
   Serial.println("leer");
 }
 
 
 void loop() {
-
-  if( millis() - t_debug > DELAY ) {
+  if( millis() - t_debug > 4*DELAY ) {
+    Serial.println("leer");
     //Serial.print(objeto);
     //Serial.print("      rampa  ");
     /*
@@ -54,6 +55,12 @@ void loop() {
      */
      t_debug = millis();
   }
+
+    if( millis() - t_debug2 > DELAY ) {
+    Serial.println("no me la contes");
+    t_debug2 = millis();
+  }
+
 
   switch(estado_actual) {
     case DETECTAR_OBJETO:
@@ -95,6 +102,7 @@ void loop() {
           t = millis();
           ruleta_movida = false;
           proximo_estado = DETECTAR_OBJETO;
+          //Serial.println("leer");
       //    Serial.println("Detectando objeto...");
         }
       }
