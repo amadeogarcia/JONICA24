@@ -12,6 +12,7 @@ posRampa = {
 }
 
 
+
 # Funcion para codificar el objeto detectado
 def objCode(approxPoly, color):
     obj = 'Default'
@@ -46,7 +47,7 @@ redAlto2 = np.array([179,255,255],np.uint8)
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 # Funcion para dibujar el contorno del objeto, mostrando forma y color
-def drawObj(mask, color):
+def drawObj(objFrame, mask, color):
     # Detecto todos los contornos en la imagen
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
@@ -98,14 +99,22 @@ def parseFrame(frame):
     maskRed2 = cv2.inRange(frameHSV,redBajo2,redAlto2)
     maskRed = cv2.add(maskRed1,maskRed2)
 
-    obj1 = drawObj(maskVerde,(0,255,0))
-    obj2 = drawObj(maskRed,(0,0,255))
+    obj1 = drawObj(frame, maskVerde, (0,255,0))
+    obj2 = drawObj(frame, maskRed, (0,0,255))
+
+    print("Obj 1:",obj1)
+    print("Obj 2:",obj2)
 
     cv2.imshow('camara', frame)
 
-    # TODO: REVISAR ESTO CON MALVA
-    return obj1
+    if obj1 != 'Default':
+        return obj1
+    
+    if obj2 != 'Default':
+        return obj2
 
+
+    
 
 # Funcion para cerrar todo
 def exitFunc():

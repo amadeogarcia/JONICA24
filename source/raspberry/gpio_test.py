@@ -1,15 +1,29 @@
-from gpiozero import Servo
+from gpiozero import LED, AngularServo
 from time import sleep
 
-servo = Servo(25)
-val = -1    
+rampa =  AngularServo(2, min_angle=0, max_angle=270 , min_pulse_width=0.0005, max_pulse_width=0.0025)
+ruleta = AngularServo(3, min_angle=0, max_angle=270 , min_pulse_width=0.0005, max_pulse_width=0.0025)
 
-try:
-	while True:
-    	servo.value = val
-    	sleep(0.1)
-    	val = val + 0.1
-    	if val > 1:
-        	val = -1
-except KeyboardInterrupt:
-	print("Program stopped")
+pos_ruleta=0
+
+
+#led = LED(3)
+#led.on()
+
+while True:
+	
+    if pos_ruleta == 0:
+        pos_ruleta = 220
+    elif pos_ruleta == 220:
+        pos_ruleta = 0
+    ruleta.angle = pos_ruleta	
+    sleep(2)
+	
+	
+	#ruleta.angle = 0
+	#rampa.angle = 30
+	#sleep(2)
+	#ruleta.angle = 220
+	#rampa.angle = 90
+	#sleep(2)
+	
