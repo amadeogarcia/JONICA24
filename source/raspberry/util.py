@@ -12,7 +12,6 @@ posRampa = {
 }
 
 
-
 # Funcion para codificar el objeto detectado
 def objCode(approxPoly, color):
     obj = 'Default'
@@ -47,10 +46,12 @@ redAlto2 = np.array([179,255,255],np.uint8)
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 # Funcion para dibujar el contorno del objeto, mostrando forma y color
-def drawObj(objFrame, mask, color):
+def drawObj(frame, mask, color):
+    objFrame = frame
+    obj = 'Default'
+    
     # Detecto todos los contornos en la imagen
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
     for c in contours:
         # Filtro los contornos detectados segun su area
         area = cv2.contourArea(c)
@@ -76,7 +77,8 @@ def drawObj(objFrame, mask, color):
             cv2.putText(objFrame, obj, (x+10,y), font, 0.75, color, 1, cv2.LINE_AA)
 
             # Devuelvo la codificacion del objeto detectado
-            return obj
+
+    return obj
 
 # Funcion para leer un frame y reducir la zona de deteccion
 def readFrame():
@@ -102,19 +104,15 @@ def parseFrame(frame):
     obj1 = drawObj(frame, maskVerde, (0,255,0))
     obj2 = drawObj(frame, maskRed, (0,0,255))
 
-    print("Obj 1:",obj1)
-    print("Obj 2:",obj2)
+    print("Obj 1:", obj1)
+    print("Obj 2:", obj2)
 
     cv2.imshow('camara', frame)
 
-    if obj1 != 'Default':
-        return obj1
+    if obj1 != 'Default':   return obj1
+    if obj2 != 'Default':   return obj2
     
-    if obj2 != 'Default':
-        return obj2
-
-
-    
+    return 'Default'   
 
 # Funcion para cerrar todo
 def exitFunc():
