@@ -9,6 +9,7 @@ from time import sleep
 from gpiozero import AngularServo
 
 #"""
+# !!!!!!! CAMBIAR AL USAR LA RASPBERRY PI !!!!!!!
 # Mock factory para debuggear en PC
 from gpiozero import Device
 from gpiozero.pins.mock import MockFactory, MockPWMPin
