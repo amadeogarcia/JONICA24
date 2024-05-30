@@ -8,7 +8,11 @@ import numpy as np
 from time import sleep
 from gpiozero import AngularServo
 
-#"""
+# Intenta reducir la vibracion de los servos
+from gpiozero.pins.pigpio import PiGPIOFactory
+AngularServo.pin_factory = PiGPIOFactory()
+
+"""
 # !!!!!!! CAMBIAR AL USAR LA RASPBERRY PI !!!!!!!
 # Mock factory para debuggear en PC
 from gpiozero import Device
