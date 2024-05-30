@@ -7,10 +7,8 @@ import cv2
 import numpy as np
 from time import sleep
 from gpiozero import AngularServo
+import RPi.GPIO as GPIO
 
-# Intenta reducir la vibracion de los servos
-from gpiozero.pins.pigpio import PiGPIOFactory
-AngularServo.pin_factory = PiGPIOFactory()
 
 """
 # !!!!!!! CAMBIAR AL USAR LA RASPBERRY PI !!!!!!!
@@ -18,26 +16,33 @@ AngularServo.pin_factory = PiGPIOFactory()
 from gpiozero import Device
 from gpiozero.pins.mock import MockFactory, MockPWMPin
 Device.pin_factory = MockFactory(pin_class=MockPWMPin)
-#"""
+"""
+
+led = 18
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(led,GPIO.OUT)
+brilloled = GPIO.PWM(led,1000)
+brilloled.start(0)
+brilloled.ChangeDutyCycle(10)
 
 # Defino un diccionario con los posibles posicionamientos de la rampa
 # TODO: Revisar segun si el servo va de 0 a 180 o de -90 a 90
 posRampa = {
     'Default':      0,
-    'Cubo Verde':   30,
-    'Cubo Rojo':    60,
-    'Esfera Verde': 90,
-    'Esfera Roja':  120
+    'Cubo Verde':   20,
+    'Cubo Rojo':    70,
+    'Esfera Verde': 120,
+    'Esfera Roja':  270
 }
 
 # Defino las variables necesarias para el stream de video
-verdeBajo = np.array([40,80,20],np.uint8)
-verdeAlto = np.array([80,255,255],np.uint8)
+verdeBajo = np.array([30,20,60],np.uint8)
+verdeAlto = np.array([90,255,255],np.uint8)
 
-redBajo1 = np.array([0,170,60],np.uint8)
+redBajo1 = np.array([0,80,120],np.uint8)
 redAlto1 = np.array([15,255,255],np.uint8)
 
-redBajo2 = np.array([170,170,60],np.uint8)
+redBajo2 = np.array([170,80,120],np.uint8)
 redAlto2 = np.array([179,255,255],np.uint8)
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -120,8 +125,8 @@ def parseFrame(frame):
     obj1 = drawObj(frame, maskVerde, (0,255,0))
     obj2 = drawObj(frame, maskRed, (0,0,255))
 
-    print("Obj 1:", obj1)
-    print("Obj 2:", obj2)
+    #print("Obj 1:", obj1)
+    #print("Obj 2:", obj2)
 
     cv2.imshow('camara', frame)
 
